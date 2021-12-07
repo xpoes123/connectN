@@ -3,8 +3,6 @@ import find4
 
 def checkwin(state, col, wc):
     z = len(state[col])-1
-    print(z)
-    print(col)
     ver = state[col][z]
     dir = [0,0,0]
     for h in [-1,1]:
@@ -39,65 +37,70 @@ def gameState():
     return cBoard
 
 def findRandomMove():
-    testLose()
-    forced = bouttaLoseVert()
+    forced = forceMove()
     #print("here forced " + str(forced))
     if(forced != -1):
         print("here forced")
         return forced
-    winMove = winningMove()
-    #print("here won " + str(winMove))
-    if (winMove != -1):
-        print("here win")
-        return winMove
-
     else:
+
         validMoves = random.randint(0, find4.x - 1)
         while len(find4.setup[validMoves]) > find4.x:
             validMoves = random.randint(0, find4.x - 1)
         return validMoves
 
-def winningMove():
-    for i in range(find4.x - 1):
-        while len(find4.setup[i]) < find4.y:
-            j = 0
-            while j + 2 < len(find4.setup[i]) and j < (find4.x - 3):
-                if find4.setup[i][j] == find4.setup[i][j + 1] and find4.setup[i][j + 1] == find4.setup[i][j + 2] and \
-                        find4.setup[i][j] == -1:
-                    return i
-                else:
-                    j += 1
-            break
-    return -1
+def firstMove():
+    firstBoard = gameState()
+    for i in range(find4.x):
+        if len(firstBoard[i]) == 1:
+            if i == 0:
+                return 1
+            elif i == 1:
+                return 2
+            elif i == 2:
+                return 5
+            elif i == 3:
+                return 3
+            elif i == 4:
+                return 3
+            elif i == 5:
+                return 4
+            elif i == 6:
+                return 5
 
-def testLose():
+def forceMove():
     goodMove = -1
+    turn = -1
+    if find4.counter == 1:
+        return firstMove()
     for i in range(find4.x):
         cBoard = gameState()
-        cBoard[i].append(-1)
+        cBoard[i].append(turn)
+        if checkwin(cBoard, i, find4.wincon) == True:
+            print("hi")
+            goodMove = i
+            return goodMove
+    turn = 1
+    for k in range(find4.x):
+        cBoard = gameState()
+        cBoard[k].append(turn)
+        if checkwin(cBoard, k, find4.wincon) == True:
+            print("hi2")
+            goodMove = k
+            return goodMove
+    turn = -1
+    for i in range(find4.x):
+        cBoard = gameState()
+        cBoard[i].append(turn)
         if checkwin(cBoard, i, find4.wincon-1) == True:
             goodMove = i
-            print("yawokehio")
-        else:
-            print("yawNokehio")
-    return goodMove
-
-def bouttaLoseVert():
+            return goodMove
+    turn = 1
     for i in range(find4.x):
-        #print("here's i " + str(i))
-        while len(find4.setup[i]) < find4.y:
-            j = 0
-            while j+2 < len(find4.setup[i]) and j < (find4.x-3):
-                #print("I and J " + str(i) + str(j))
-                if find4.setup[i][j] == find4.setup[i][j+1] and find4.setup[i][j+1] == find4.setup[i][j+2] and find4.setup[i][j] == 1:
-                    if j+3 < len(find4.setup[i]):
-                        break
-                    else:
-                        return i
-                else:
-                    j+=1
-            break
-    return -1
-
-def findBestMove():
-    return
+        cBoard = gameState()
+        cBoard[i].append(turn)
+        if checkwin(cBoard, i, find4.wincon-1) == True:
+            print("hi")
+            goodMove = i
+            return goodMove
+    return goodMove
